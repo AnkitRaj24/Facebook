@@ -8,6 +8,7 @@ const App = () => {
   const [error, setError] = useState(null);
   const [since, setSince] = useState("");
   const [until, setUntil] = useState("");
+  const [pageAccessToken, setPageAccessToken] = useState(""); 
 
   useEffect(() => {
     // Load Facebook SDK
@@ -22,6 +23,7 @@ const App = () => {
       // Check login status on init
       window.FB.getLoginStatus((response) => {
         if (response.status === "connected") {
+          console.log("User Access Token", response.authResponse.accessToken);
           fetchUserProfile(response.authResponse.accessToken);
           fetchPages(response.authResponse.accessToken);
         }
@@ -57,6 +59,19 @@ const App = () => {
     );
   };
 
+  const handleLogout = () => {
+    window.FB.logout((response) => {
+      setProfile(null);
+      setPages([]);
+      setSelectedPage(null);
+      setPageDetails({});
+      setError(null);
+      setSince("");
+      setUntil("");
+      setPageAccessToken("");
+    });
+  };
+
   const fetchUserProfile = (accessToken) => {
     window.FB.api(
       "/me",
@@ -86,37 +101,55 @@ const App = () => {
   const handlePageSelect = (event) => {
     const pageId = event.target.value;
     setSelectedPage(pageId);
-    fetchPageDetails(pageId);
+    fetchPageAccessToken(pageId);
   };
 
-  const fetchPageDetails = (pageId) => {
-    const accessToken = window.FB.getAccessToken();
+  const fetchPageAccessToken = (pageId) => {
+    // Fetching Page Access Token
+    window.FB.api(`/${pageId}`, { fields: "access_token" }, (response) => {
+      if (response && !response.error) {
+        setPageAccessToken(response.access_token); // Set pageAccessToken state
+        fetchPageDetails(pageId, response.access_token);
+      } else {
+        console.error("Error fetching page access token: ", response.error);
+        setError(response.error);
+      }
+    });
+  };
+
+  const fetchPageDetails = (pageId, pageAccessToken) => {
+    console.log("PAGE ID", pageId);
+    console.log("PAGE TOKEN", pageAccessToken);
     const params = {
-      access_token: accessToken,
+      access_token: pageAccessToken,
       since: since,
       until: until,
       period: "day",
     };
 
+    // Fetching Page Insights
     window.FB.api(
-      `/${pageId}/insights?metric=page_fans,page_engaged_users,page_impressions,page_reactions_on_post`,
+      `/${pageId}/insights/page_posts_impressions_unique,page_fans,page_post_engagements,page_actions_post_reactions_like_total`,
       params,
       (response) => {
         if (response && !response.error) {
+          console.log(response);
           const details = {
             fans:
               response.data.find((metric) => metric.name === "page_fans")
                 ?.values[0].value || 0,
             engagement:
               response.data.find(
-                (metric) => metric.name === "page_engaged_users"
+                (metric) => metric.name === "page_post_engagements"
               )?.values[0].value || 0,
             impressions:
-              response.data.find((metric) => metric.name === "page_impressions")
-                ?.values[0].value || 0,
+              response.data.find(
+                (metric) => metric.name === "page_posts_impressions_unique"
+              )?.values[0].value || 0,
             reactions:
               response.data.find(
-                (metric) => metric.name === "page_reactions_on_post"
+                (metric) =>
+                  metric.name === "page_actions_post_reactions_like_total"
               )?.values[0].value || 0,
           };
           setPageDetails(details);
@@ -136,6 +169,7 @@ const App = () => {
         <div>
           <h1>Welcome, {profile.name}</h1>
           <img src={profile.picture.data.url} alt="Profile" />
+          <button onClick={handleLogout}>Logout</button>
         </div>
       )}
 
@@ -172,7 +206,9 @@ const App = () => {
               onChange={(e) => setUntil(e.target.value)}
             />
           </label>
-          <button onClick={() => fetchPageDetails(selectedPage)}>
+          <button
+            onClick={() => fetchPageDetails(selectedPage, pageAccessToken)}
+          >
             Get Page Details
           </button>
         </div>

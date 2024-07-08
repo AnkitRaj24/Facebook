@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Dashboard from "./Dashboard";
 
+
 const App = () => {
   const [profile, setProfile] = useState(null);
   const [pages, setPages] = useState([]);
   const [selectedPage, setSelectedPage] = useState(null);
   const [pageDetails, setPageDetails] = useState({});
+  const [error, setError] = useState(null);
   const [since, setSince] = useState("");
   const [until, setUntil] = useState("");
   const [pageAccessToken, setPageAccessToken] = useState(""); // State to hold pageAccessToken
@@ -49,7 +51,7 @@ const App = () => {
           fetchPages(response.authResponse.accessToken);
         } else {
           console.log("User cancelled login or did not fully authorize.");
-         
+          setError("User cancelled login or did not fully authorize.");
         }
       },
       {
@@ -65,7 +67,7 @@ const App = () => {
       setPages([]);
       setSelectedPage(null);
       setPageDetails({});
-     
+      setError(null);
       setSince("");
       setUntil("");
       setPageAccessToken("");
@@ -81,7 +83,7 @@ const App = () => {
           setProfile(response);
         } else {
           console.error("Error fetching profile: ", response.error);
-          
+          setError(response.error);
         }
       }
     );
@@ -93,7 +95,7 @@ const App = () => {
         setPages(response.data);
       } else {
         console.error("Error fetching pages: ", response.error);
-        
+        setError(response.error);
       }
     });
   };
@@ -112,7 +114,7 @@ const App = () => {
         fetchPageDetails(pageId, response.access_token);
       } else {
         console.error("Error fetching page access token: ", response.error);
-        
+        setError(response.error);
       }
     });
   };
@@ -155,7 +157,7 @@ const App = () => {
           setPageDetails(details);
         } else {
           console.error("Error fetching page details: ", response.error);
-          
+          setError(response.error);
         }
       }
     );
@@ -177,7 +179,7 @@ const App = () => {
           until={until}
           setUntil={setUntil}
           handleLogout={handleLogout}
-          handlePageSelect={handlePageSelect}
+         
           fetchPageDetails={fetchPageDetails}
             pageAccessToken={pageAccessToken}
             fetchPageAccessToken={fetchPageAccessToken}

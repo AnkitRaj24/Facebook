@@ -11,15 +11,16 @@ const Dashboard = ({
   until,
   setUntil,
   handleLogout,
-  handlePageSelect,
+  
   fetchPageDetails,
   pageAccessToken,
   fetchPageAccessToken,
 }) => {
   const onPageSelect = (event) => {
     const pageId = event.target.value;
-    setSelectedPage(pageId);
-    fetchPageAccessToken(pageId);
+      setSelectedPage(pageId);
+      fetchPageAccessToken(pageId);
+    // No need to fetch pageAccessToken here, it should be handled in App component
   };
 
   return (

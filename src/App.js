@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Dashboard from "./Dashboard";
-
+import './App.css'
 
 const App = () => {
   const [profile, setProfile] = useState(null);
@@ -79,6 +79,7 @@ const App = () => {
       "/me",
       { fields: "name,email,picture", access_token: accessToken },
       (response) => {
+        console.log("USER PROFILE",response)
         if (response && !response.error) {
           setProfile(response);
         } else {
@@ -100,11 +101,7 @@ const App = () => {
     });
   };
 
-  const handlePageSelect = (event) => {
-    const pageId = event.target.value;
-    setSelectedPage(pageId);
-    fetchPageAccessToken(pageId);
-  };
+
 
   const fetchPageAccessToken = (pageId) => {
     // Fetching Page Access Token
@@ -126,10 +123,10 @@ const App = () => {
       access_token: pageAccessToken,
       since: since,
       until: until,
-      period: "day",
+      period: "total_over_range",
     };
 
-    // Fetching Page Insights
+    
     window.FB.api(
       `/${pageId}/insights/page_posts_impressions_unique,page_fans,page_post_engagements,page_actions_post_reactions_like_total`,
       params,
@@ -164,9 +161,47 @@ const App = () => {
   };
 
   return (
-    <div>
+    <div className="Home">
       {!profile ? (
-        <button onClick={handleLogin}>Login with Facebook</button>
+        <div className="ContainerBox">
+          <div className="left">
+            <div className="row res">
+              <div className="fb-form res">
+                <div className="card">
+                  <h1>Facebook</h1>
+                  <p>
+                    <b>Connect with friends and the world</b>
+                  </p>
+                  <p>
+                    <h2>LOGIN WITH FACEBOOK TO MANAGE ALL YOUR PAGES</h2>
+                  </p>
+                </div>
+                <form action="#">
+                  <input
+                    type="email"
+                    placeholder="Email or phone number"
+                    required
+                  />
+                  <input type="password" placeholder="Password" required />
+                  <div className="fb-submit">
+                    <button
+                      button
+                      className="loginBtn loginBtn--facebook"
+                      onClick={handleLogin}
+                    >
+                      Login with Facebook
+                    </button>
+                  </div>
+                  <hr />
+                  <div className="button">
+                    <a href="#">Create new account</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div className="right"></div>
+        </div>
       ) : (
         <Dashboard
           profile={profile}
@@ -179,10 +214,9 @@ const App = () => {
           until={until}
           setUntil={setUntil}
           handleLogout={handleLogout}
-         
           fetchPageDetails={fetchPageDetails}
-            pageAccessToken={pageAccessToken}
-            fetchPageAccessToken={fetchPageAccessToken}
+          pageAccessToken={pageAccessToken}
+          fetchPageAccessToken={fetchPageAccessToken}
         />
       )}
     </div>

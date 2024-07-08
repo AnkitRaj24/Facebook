@@ -1,0 +1,93 @@
+.dashBoard{
+    height: 100vh;
+    background: 
+    url('./Images/pic12.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  border-radius: 10px;
+ color: white;
+    
+}
+.page-details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  width: 100%;
+  max-width:90%;
+  margin-bottom: 20px;
+}
+
+.page-select-container label {
+  display: flex;
+  align-items: center;
+}
+
+.page-select-container select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.date-inputs {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+
+}
+
+.date-inputs label {
+  display: flex;
+  align-items: center;
+  margin-left:0px 5px 0 ;
+}
+
+.date-inputs input {
+  padding: 10px;
+  margin-left: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.fetch-button {
+  background-color: #1877F2;
+  color: white;
+  margin: 0 5px 0 5px;
+  border: none;
+  width: 90px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.fetch-button:hover{
+    background-color: #4864B1;
+}
+.metrics-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  width: 100%;
+  
+}
+
+.metric-card {
+  background-color: rgb(240, 235, 235);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 200px;
+  text-align: center;
+  color: black;
+}

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
+import Dashboard from "./Dashboard";
 
 const App = () => {
   const [profile, setProfile] = useState(null);
   const [pages, setPages] = useState([]);
   const [selectedPage, setSelectedPage] = useState(null);
   const [pageDetails, setPageDetails] = useState({});
-  const [error, setError] = useState(null);
   const [since, setSince] = useState("");
   const [until, setUntil] = useState("");
-  const [pageAccessToken, setPageAccessToken] = useState(""); 
+  const [pageAccessToken, setPageAccessToken] = useState(""); // State to hold pageAccessToken
 
   useEffect(() => {
     // Load Facebook SDK
@@ -49,7 +49,7 @@ const App = () => {
           fetchPages(response.authResponse.accessToken);
         } else {
           console.log("User cancelled login or did not fully authorize.");
-          setError("User cancelled login or did not fully authorize.");
+         
         }
       },
       {
@@ -65,7 +65,7 @@ const App = () => {
       setPages([]);
       setSelectedPage(null);
       setPageDetails({});
-      setError(null);
+     
       setSince("");
       setUntil("");
       setPageAccessToken("");
@@ -81,7 +81,7 @@ const App = () => {
           setProfile(response);
         } else {
           console.error("Error fetching profile: ", response.error);
-          setError(response.error);
+          
         }
       }
     );
@@ -93,7 +93,7 @@ const App = () => {
         setPages(response.data);
       } else {
         console.error("Error fetching pages: ", response.error);
-        setError(response.error);
+        
       }
     });
   };
@@ -112,7 +112,7 @@ const App = () => {
         fetchPageDetails(pageId, response.access_token);
       } else {
         console.error("Error fetching page access token: ", response.error);
-        setError(response.error);
+        
       }
     });
   };
@@ -155,7 +155,7 @@ const App = () => {
           setPageDetails(details);
         } else {
           console.error("Error fetching page details: ", response.error);
-          setError(response.error);
+          
         }
       }
     );
@@ -166,76 +166,22 @@ const App = () => {
       {!profile ? (
         <button onClick={handleLogin}>Login with Facebook</button>
       ) : (
-        <div>
-          <h1>Welcome, {profile.name}</h1>
-          <img src={profile.picture.data.url} alt="Profile" />
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-      )}
-
-      {pages.length > 0 && (
-        <div>
-          <h2>Pages Managed by User:</h2>
-          <select onChange={handlePageSelect}>
-            <option value="">Select a page</option>
-            {pages.map((page) => (
-              <option key={page.id} value={page.id}>
-                {page.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {selectedPage && (
-        <div>
-          <h3>Selected Page Details</h3>
-          <label>
-            Since:
-            <input
-              type="date"
-              value={since}
-              onChange={(e) => setSince(e.target.value)}
-            />
-          </label>
-          <label>
-            Until:
-            <input
-              type="date"
-              value={until}
-              onChange={(e) => setUntil(e.target.value)}
-            />
-          </label>
-          <button
-            onClick={() => fetchPageDetails(selectedPage, pageAccessToken)}
-          >
-            Get Page Details
-          </button>
-        </div>
-      )}
-
-      {pageDetails && (
-        <div>
-          <h3>Page Metrics</h3>
-          <div>
-            <strong>Total Followers / Fans:</strong> {pageDetails.fans}
-          </div>
-          <div>
-            <strong>Total Engagement:</strong> {pageDetails.engagement}
-          </div>
-          <div>
-            <strong>Total Impressions:</strong> {pageDetails.impressions}
-          </div>
-          <div>
-            <strong>Total Reactions:</strong> {pageDetails.reactions}
-          </div>
-        </div>
-      )}
-
-      {error && (
-        <div>
-          <h2>Error: {error.message}</h2>
-        </div>
+        <Dashboard
+          profile={profile}
+          pages={pages}
+          selectedPage={selectedPage}
+          setSelectedPage={setSelectedPage}
+          pageDetails={pageDetails}
+          since={since}
+          setSince={setSince}
+          until={until}
+          setUntil={setUntil}
+          handleLogout={handleLogout}
+          handlePageSelect={handlePageSelect}
+          fetchPageDetails={fetchPageDetails}
+            pageAccessToken={pageAccessToken}
+            fetchPageAccessToken={fetchPageAccessToken}
+        />
       )}
     </div>
   );

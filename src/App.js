@@ -116,7 +116,7 @@ const App = () => {
     });
   };
 
-  const fetchPageDetails = (pageId, pageAccessToken) => {
+  /*const fetchPageDetails = (pageId, pageAccessToken) => {
     console.log("PAGE ID", pageId);
     console.log("PAGE TOKEN", pageAccessToken);
     const params = {
@@ -125,26 +125,52 @@ const App = () => {
       until: until,
       period: "total_over_range",
     };
+*/
+  const fetchPageDetails = (pageId, pageAccessToken) => {
+    console.log("PAGE ID", pageId);
+    console.log("PAGE TOKEN", pageAccessToken);
 
-    
+    // Check if since and until are empty and set them to null
+    const sinceDate = since ? since : null;
+    const untilDate = until ? until : null;
+     let period = "total_over_range";
+
+     // Change period to "day_28" if both since and until are not provided
+     if (!sinceDate && !untilDate) {
+       period = "month";
+     }
+    const params = {
+      access_token: pageAccessToken,
+      period:period,
+    };
+
+    // Add since and until to params only if they are not null
+    if (sinceDate) {
+      params.since = sinceDate;
+    }
+    if (untilDate) {
+      params.until = untilDate;
+    }
+
     window.FB.api(
-      `/${pageId}/insights/page_posts_impressions_unique,page_fans,page_post_engagements,page_actions_post_reactions_like_total`,
+      // `/${pageId}/insights/page_posts_impressions_unique,page_fans,page_post_engagements,page_actions_post_reactions_like_total`,
+      `/${pageId}/insights/page_impressions,page_daily_follows_unique,page_post_engagements,page_actions_post_reactions_like_total`,
+      //`/${pageId}/insights/page_posts_impressions_unique,page_daily_follows_unique,page_post_engagements,page_actions_post_reactions_like_total`,
       params,
       (response) => {
         if (response && !response.error) {
           console.log(response);
           const details = {
             fans:
-              response.data.find((metric) => metric.name === "page_fans")
+              response.data.find((metric) => metric.name === "page_daily_follows_unique")
                 ?.values[0].value || 0,
             engagement:
               response.data.find(
                 (metric) => metric.name === "page_post_engagements"
               )?.values[0].value || 0,
             impressions:
-              response.data.find(
-                (metric) => metric.name === "page_posts_impressions_unique"
-              )?.values[0].value || 0,
+              response.data.find((metric) => metric.name === "page_impressions")
+                ?.values[0].value || 0,
             reactions:
               response.data.find(
                 (metric) =>

@@ -20,7 +20,8 @@ const Dashboard = ({
   const onPageSelect = (event) => {
     const pageId = event.target.value;
     setSelectedPage(pageId);
-    setShowMetrics(false); // Hide metrics when a new page is selected
+     fetchPageAccessToken(pageId);
+    setShowMetrics(true); 
   };
 
   const handleShowMetrics = () => {
@@ -56,7 +57,7 @@ const Dashboard = ({
               <input
                 type="date"
                 value={since}
-                onChange={(e) => setSince(e.target.value)}
+                onChange={(e) => { setShowMetrics(false); setSince(e.target.value) }}
               />
             </label>
             <label>
@@ -64,7 +65,7 @@ const Dashboard = ({
               <input
                 type="date"
                 value={until}
-                onChange={(e) => setUntil(e.target.value)}
+                onChange={(e) => { setShowMetrics(false); setUntil(e.target.value) }}
               />
             </label>
             <button onClick={handleShowMetrics} className="fetch-button">
@@ -79,7 +80,12 @@ const Dashboard = ({
             </button>
           </div>
         </div>
-
+        {showMetrics && (!since && !until) && (
+          <div className="monthly-data-message">
+            <h3 >One month insights by befault : Please select a range </h3>
+            
+          </div>
+        )}
         {showMetrics && pageDetails && (
           <div className="metrics-container">
             <div className="metric-card">
